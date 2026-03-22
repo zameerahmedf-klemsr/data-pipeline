@@ -165,4 +165,4 @@ Open `scraper.db` using DB Browser and view tables in a UI.
 
 ## Author
 
-Zameer Ahmed F
+Zameer Ahmed F 
