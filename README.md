@@ -1,12 +1,11 @@
-# Data Pipeline Scraper
+# Data Pipeline Scraper with FastAPI API
 
 ## Overview
 
-This project is a simple data pipeline that scrapes real data from websites and stores it in a SQLite database.
+This project is a complete data pipeline that scrapes real data from websites, stores it in a SQLite database, and exposes it through a FastAPI REST API.
 
-I built this to understand how scraping, data cleaning, and database storage work together in a real workflow.
+The goal of this project is to understand how scraping, data processing, database storage, and API development work together in a real-world backend system.
 
----
 
 ## What it does
 
@@ -15,9 +14,12 @@ The pipeline collects data from:
 * Hacker News
 * GitHub Trending
 
-For each source, it scrapes useful fields and stores them in a database while avoiding duplicates.
+The collected data is:
 
----
+* Cleaned and validated
+* Stored in a SQLite database
+* Served through a REST API
+
 
 ## Data Collected
 
@@ -37,17 +39,18 @@ For each source, it scrapes useful fields and stores them in a database while av
 * Language
 * Today's stars
 
----
 
-## Tech Used
+## Tech Stack
 
 * Python
 * requests
 * BeautifulSoup
 * SQLAlchemy
 * SQLite
+* FastAPI
+* Uvicorn
+* SlowAPI (Rate Limiting)
 
----
 
 ## Project Structure
 
@@ -58,6 +61,7 @@ data-pipeline/
 ├── scraper_hn.py
 ├── scraper_github.py
 ├── main.py
+├── api.py
 ├── scraper.db
 └── README.md
 
@@ -69,30 +73,111 @@ data-pipeline/
 3. Duplicate entries are skipped
 4. Data is stored in SQLite
 5. Each run is logged in a separate table
+6. FastAPI serves the stored data via REST endpoints
 
----
 
-## Running the project
+## Running the Project
 
-### Setup
+### 1. Setup
 
 python -m venv venv
 venv\Scripts\activate
-pip install requests beautifulsoup4 sqlalchemy
+pip install requests beautifulsoup4 sqlalchemy fastapi uvicorn slowapi
 
-### Run
+### 2. Run Scraper
 
 python main.py
 
----
+### 3. Run API
 
-## Example Output
+python -m uvicorn api:app --reload
 
-HackerNews: 60 items stored
-GitHub: 11 items stored
-All scraping completed!
 
----
+### API Endpoints
+
+### 1. Home
+
+GET /
+
+Response:
+
+{"message": "API is working"}
+
+
+## 2. Get All Items
+
+GET /items
+
+Returns all scraped data.
+
+
+## 3. Search Items
+
+Search items by title.
+
+GET /items?search=AI
+
+Example:
+
+/items?search=python
+
+
+## 4. Filter Items
+
+Filter items based on source.
+
+GET /items?source=HackerNews
+
+Example:
+
+/items?source=GitHub
+
+
+## 5. Pagination
+
+Control how many results are returned.
+
+GET /items?page=1&limit=5
+
+Example:
+
+/items?page=2&limit=10
+
+## 6. Combined Usage
+
+You can combine all features together.
+
+/items?search=AI&source=HackerNews&page=1&limit=5
+
+
+## 7. Analytics
+
+Get statistics about stored data.
+
+GET /stats
+
+Response:
+
+{
+  "total_items": 71,
+  "hackernews_items": 60,
+  "github_items": 11
+}
+
+## Features
+
+* Scrapes real-time data
+* Stores data in SQLite
+* Prevents duplicate entries
+* Handles errors safely
+* Logs each scraping run
+* REST API built using FastAPI
+* Search functionality
+* Filtering by source
+* Pagination support
+* Rate limiting to prevent abuse
+* Analytics endpoint
+
 
 ## Database Tables
 
@@ -102,14 +187,13 @@ Stores all scraped data.
 
 ### scrape_runs
 
-Stores logs of each run:
+Stores logs of each scraping run:
 
 * number of items
 * errors
 * status
 * timestamps
 
----
 
 ## Viewing the Database
 
@@ -119,49 +203,28 @@ sqlite3 scraper.db
 .tables
 SELECT * FROM scraped_items;
 
----
 
 ### Option 2: DB Browser for SQLite
 
-Open `scraper.db` using DB Browser and view tables in a UI.
+Open `scraper.db` using DB Browser for a graphical view.
 
----
 
 ### Option 3: VS Code (SQL Viewer Extension)
 
 * Install SQL Viewer extension
-* Open the project in VS Code
+* Open the project
 * Connect to `scraper.db`
-* View tables and run queries
+* Run queries
 
----
-
-## Features
-
-* Scrapes real data
-* Stores data in SQLite
-* Prevents duplicate entries
-* Handles errors without crashing
-* Logs every run
-
----
-
-## Notes
-
-* No scraping frameworks were used
-* Everything is built using basic tools (requests + BeautifulSoup)
-* The pipeline is simple but can be extended further
-
----
 
 ## Future Improvements
 
-* Build an API using FastAPI
-* Add search and filtering
-* Schedule automatic scraping
+* Add authentication to API
+* Deploy API online
+* Schedule automated scraping
 * Move to PostgreSQL
+* Add dashboard/visualization
 
----
 
 ## Author
 
